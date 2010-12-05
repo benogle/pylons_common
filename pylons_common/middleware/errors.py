@@ -58,7 +58,7 @@ def handle_async_exception(exc_info, environ, debug_info=None):
     result = {
         'status': 'fail',
         'errors': [{
-            'message': str(exception),
+            'message': debug_info and str(exception) or 'Internal Server Error',
             'code': exceptions.FAIL
         }]
     }
@@ -274,7 +274,7 @@ class VariableErrorHandler(object):
         class ComEmailReporter(reporter.EmailReporter):
             def report(self, exc_data):
                 logger.info('Emailed about error %s' % exc_data)
-                super(AdrollEmailReporter, self).report(exc_data)
+                super(ComEmailReporter, self).report(exc_data)
         
         # emails will not be sent in dev. 
         if error_email:
@@ -298,7 +298,7 @@ class VariableErrorHandler(object):
         to that middleware to try/except and handle errors if they occur.
         """
         session = environ.get('beaker.session')
-        role = session and session.get('role')
+        show_debug = bool(session and session.get('show_debug') or False)
         
         # Only show glossy (unhelpful) errors to non-admins on production or staging.
         # Admins always see admin errors (full stack trace, debug tools, etc),
@@ -308,7 +308,7 @@ class VariableErrorHandler(object):
         # error. It handles only logging of the errors (emailing us). The actual unhelpful error
         # is shown by the StatusCodeRedirect middleware which redirects to our error.py
         # controller's document action. -bogle
-        if not environ.get('show_debug', False):
+        if not show_debug:
             return self.glossy_error_app(environ, start_response)
         else:
             # Set redirect control key to False in this call's environ so engineers don't

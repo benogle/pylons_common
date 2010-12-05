@@ -1,3 +1,5 @@
+import base64
+import uuid as uuid_mod
 from pylons_common.lib.log import create_logger
 logger = create_logger('pylons_common.lib.utils')
 
@@ -51,3 +53,21 @@ def extract(d, keys):
     Creates a new dict that is a subset of d based on passed in keys.
     """
     return dict((k, d[k]) for k in keys if k in d)
+
+def itemize(obj, *attrs):
+    """
+    pulls attributes from an object and puts them into a dictionary
+    """
+    return dict([(attr, getattr(obj, attr)) for attr in attrs])
+
+def uuid():
+    """
+    create a 22 char globally unique identifier
+    """
+    u = uuid_mod.uuid4()
+    b = base64.b32encode(u.bytes)
+                     
+    b = b[0:22] # lose the "==" that finishes a base64 value
+    return b.decode('utf-8')
+    
+    DATE_FORMAT_ACCEPT = [u'%Y-%m-%d %H:%M:%S', u'%Y-%m-%d', u'%m-%d-%Y', u'%m/%d/%Y', u'%m.%d.%Y', u'%b %d, %Y']

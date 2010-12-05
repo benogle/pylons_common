@@ -3,7 +3,7 @@ import formencode
 
 from formencode import htmlfill
 from paste.httpexceptions import HTTPException
-import pylons
+import pylons, time
 from pylons import tmpl_context as c, request, response
 from pylons.templating import render_mako
 
@@ -24,6 +24,8 @@ ERROR_HTTP_STATUS = {
     FORBIDDEN: 403,
     NOT_FOUND: 404
 }
+
+MAX_DEBUG_REQUESTS = 200
 
 def htmlfill_error_formatter(error):
     """
@@ -54,6 +56,7 @@ def async(func, *args, **kwargs):
     A decorator to interface with async client requests,
     including returning controller exceptions.
     """
+    render_start = time.time()
     
     request.environ['is_async'] = True
     
@@ -169,16 +172,21 @@ def async(func, *args, **kwargs):
                 append_client_exception(result, ce)
     
     # queries for the query analyzer. Their base controller must set this...
+    
+    requested_url = request.environ.get('PATH_INFO')
+    if request.environ.get('QUERY_STRING'):
+        requested_url += '?' + request.environ['QUERY_STRING']
+    
     debug = request.environ.get('show_debug', False)
     if debug and c.queries:
-        from time import time
         length = len(c.queries)
+        queries = sorted(c.queries, key=lambda x: -x[1])
         result['debug'] = {
             'queries': length,
             'query_time': c.query_time or 0,
-            'total_time': time() - c.render_start,
-            'requested_url': c.requested_url,
-            'request_html': render_response('/debug/request.html')
+            'total_time': time.time() - render_start,
+            'requested_url': requested_url,
+            'query_data': [{'query': q, 'time': t} for q, t in queries[:MAX_DEBUG_REQUESTS]]
         }
         logger.info('ASYNC queries: %s; qtime: %.3fsec; total time: %.3fsec' % (result['debug']['queries'], result['debug']['query_time'], result['debug']['total_time']))
         

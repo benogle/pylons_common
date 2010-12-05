@@ -1,7 +1,9 @@
 
 from pylons_common.lib.log import create_logger
 logger = create_logger('pylons_common.lib.datetime')
-from datetime import datetime
+from datetime import datetime, timedelta
+
+DATE_FORMAT_ACCEPT = [u'%Y-%m-%d %H:%M:%S', u'%Y-%m-%d', u'%m-%d-%Y', u'%m/%d/%Y', u'%m.%d.%Y', u'%b %d, %Y']
 
 popular_timezones = [u'US/Eastern', u'US/Central', u'US/Mountain', u'US/Pacific', u'US/Alaska', u'US/Hawaii', u'US/Samoa',
                      u'Europe/London', u'Europe/Paris', u'Europe/Istanbul', u'Europe/Moscow',
@@ -9,6 +11,32 @@ popular_timezones = [u'US/Eastern', u'US/Central', u'US/Mountain', u'US/Pacific'
                      u'Asia/Dubai', u'Asia/Calcutta', u'Asia/Rangoon', u'Asia/Bangkok', u'Asia/Hong_Kong', u'Asia/Tokyo',
                      u'Australia/Brisbane', u'Australia/Sydney',
                      u'Pacific/Fiji']
+
+def convert_date(value):
+    """
+    converts a string into a datetime object
+    """
+    
+    if not value:
+        return None
+    
+    if isinstance(value, datetime):
+        return value
+    
+    def try_parse(val, format):
+        try:
+            dt = datetime.strptime(val, format)
+        except ValueError:
+            dt = None
+        return dt
+    
+    converted_value = None
+    for format in DATE_FORMAT_ACCEPT:
+        converted_value = converted_value or try_parse(value, format)
+    if not converted_value:
+        raise ValueError('Cannot convert supposed date %s' % value)
+    
+    return converted_value
 
 def get_timezones():
     import pytz
