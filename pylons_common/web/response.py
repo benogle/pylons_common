@@ -192,7 +192,7 @@ def ajax(func, *args, **kwargs):
         logger.info('ASYNC queries: %s; qtime: %.3fsec; total time: %.3fsec' % (result['debug']['queries'], result['debug']['query_time'], result['debug']['total_time']))
         
     return format_results(result, format)
-async = decorator(async)
+ajax = decorator(ajax)
 
 def dispatch_on(**method_map):
     """Dispatches to alternate controller methods based on HTTP method
