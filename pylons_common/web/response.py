@@ -51,7 +51,7 @@ def format_results(results, format):
     response.headers['Content-Type'] = content_type + '; charset=utf-8'
     return formatted_results
 
-def async(func, *args, **kwargs):
+def ajax(func, *args, **kwargs):
     """
     A decorator to interface with async client requests,
     including returning controller exceptions.
@@ -127,6 +127,7 @@ def async(func, *args, **kwargs):
     except HTTPException, (e):
         result = {}
         if e.code in [404, 403]:
+            response.status = e.code
             result['errors'] = [{'message': 'Not found (404): %s' % (e.detail), 'code': e.code}]
         else:
             raise
@@ -263,7 +264,7 @@ def mixed_response(sync_error_action=None, prefix_error=False,
             params = request.params
             
             if self.is_async:
-                @async
+                @ajax
                 def run_async():
                     return fn(self, *args, **kwargs)
                 return run_async()

@@ -4,7 +4,7 @@ import simplejson
 from sqlalchemy import sqlalchemy as sa
 
 from pylons_common.lib.exceptions import *
-from pylons_common.web.response import async, FORMAT_JSON
+from pylons_common.web.response import ajax, FORMAT_JSON
 import time, sys, cgi
 
 from pylons_common.lib.log import create_logger
@@ -122,7 +122,7 @@ class ApiMixin(object):
 
         return results
     
-    @async
+    @ajax
     def dispatch(self, version, module, function=None, eid=None, id=None):
         
         start_time = time.time()

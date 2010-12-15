@@ -41,7 +41,7 @@ The chosen middleware object's (a VanillaErrorMiddleware or DebugErrorMiddleware
 method is called on every request regardless if there is an error or not.
 
 The middleware knows if the request is async or not via environ['is_async'] which is set by the
-response.async decorator. Because it is set by the response.async decorator, we dont know if
+response.ajax decorator. Because it is set by the response.ajax decorator, we dont know if
 the response is supposed to be async until _after_ the request's controller.action
 method is called. That is why I check is_async right before I return the exception's resopnse.
 """
@@ -104,7 +104,7 @@ class VanillaErrorMiddleware(ErrorMiddleware):
             exc_info = sys.exc_info()
             try:
                 
-                #is_async is set by the @async decorator
+                #is_async is set by the @ajax decorator
                 if environ.get('is_async', None):
                     start_response('500 Internal Server Error',
                                [('content-type', 'application/json; charset=utf8')],

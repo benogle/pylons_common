@@ -21,14 +21,14 @@ class AppException(Exception):
 class ClientException(AppException):
     """
     Use ClientException when you have an error that the client should see. If it makes it
-    through the entire pylons stack, client_async will handle the exception and return a
+    through the entire pylons stack, ajax will handle the exception and return a
     status code in the 400 range based on ClientException.code. i.e. NOT_FOUND -> 404 etc
     """
     pass
 
 class CompoundException(AppException):
     """
-    Use this when you want to throw more than one ClientException. client_async will properly
+    Use this when you want to throw more than one ClientException. ajax will properly
     handle this thing.
     """
     def __init__(self, msg, code=None):
