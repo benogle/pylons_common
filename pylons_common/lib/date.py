@@ -75,3 +75,30 @@ def get_timezones():
             logger.exception("Localization failure for timezone " + tzname)
 
     return timezones
+
+def relative_date_str(date, now=None, time=False): 
+    '''
+    Will return a string like 'Today', 'Tomorrow' etc.
+    '''
+    if not now:	now = datetime.utcnow()
+    
+    if not date: return 'unknown'
+
+    diff = date.date() - now.date()
+
+    def day_time(day_str):
+        return '%s%s' % (day_str, time and ' at %s' % date.strftime("%I:%M %p") or '')
+    
+    if diff.days == 0:
+        return day_time('Today')
+    elif diff.days == -1:
+        return day_time('Yesterday')
+    elif diff.days == 1:
+        return day_time('Tomorrow')
+    
+    elif diff.days < 0 and diff.days >= -7:#Within one week back
+        return '%s ago' % pluralize(-diff.days, '{0} days', '1 day')
+    elif diff.days > 0 and diff.days < 7:#Within one week back
+        return 'in %s' % pluralize(diff.days, '{0} days', '1 day')
+    else:
+        return date.strftime("%b %e, %Y")## on 10/03/1980
