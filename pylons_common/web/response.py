@@ -85,7 +85,7 @@ def ajax(func, *args, **kwargs):
     
     # run the function
     try:
-        result = func(*args)
+        result = func(*args, **kwargs)
         
         if result == True:
             result = {u'status': STATUS_SUCCESS}

@@ -155,7 +155,7 @@ class ApiMixin(object):
                     params[k] = repr(v)
             
             request_params = unicode(simplejson.dumps(params))
-        
+            
         except ApiPrologueException, (e):
             # if they specified a wrong version, bad function, etc. Things that arent imlpemented...
             response_code = e.http_response_code
@@ -183,6 +183,9 @@ class ApiMixin(object):
                           unicode(version), module, function, request_params,
                           response_code, message, run_time, unicode(domain),
                           unicode(request.headers.get('User-Agent')))
+            
+            logger.info('Committing')
+            self.Session.commit()
             
             #reraise any exceptions so that the error middleware can handle them
             if app_exception:

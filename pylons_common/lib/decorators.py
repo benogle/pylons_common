@@ -52,7 +52,7 @@ def stackable(fn):
 ### Decorators for api functions
 ##
 
-def enforce(**types):
+def enforce(Session, **types):
     """
     Assumes all arguments are unicode strings, and converts or resolves them to more complex objects.
     If a type of the form [Type] is specified, the arguments will be interpreted as a comma-delimited

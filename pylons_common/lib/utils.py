@@ -69,5 +69,20 @@ def uuid():
                      
     b = b[0:22] # lose the "==" that finishes a base64 value
     return b.decode('utf-8')
+
+def pluralize(num, if_many, if_one, if_zero=None):
+    """
+    returns the proper string based on the number passed.
     
-    DATE_FORMAT_ACCEPT = [u'%Y-%m-%d %H:%M:%S', u'%Y-%m-%d', u'%m-%d-%Y', u'%m/%d/%Y', u'%m.%d.%Y', u'%b %d, %Y']
+    s = pluralize(1, "sites", "site")
+    
+    s would be 'site'
+    """
+    text = if_many
+    
+    if num == 0 and if_zero:
+        text = if_zero
+    elif num == 1:
+        text = if_one
+    
+    return text.replace(u'{0}', unicode(num))
