@@ -102,6 +102,8 @@ def ajax(func, *args, **kwargs):
             result['status'] = STATUS_SUCCESS
     
     except formencode.validators.Invalid, (e):
+        result = {}
+        
         # Keep the response status at 200 for Flash requests, otherwise the client wont see
         # any useful error information        
         if not flash_request:
@@ -112,15 +114,18 @@ def ajax(func, *args, **kwargs):
         else:
             result['status'] = STATUS_FAIL
         
-        result = {}
-        
         errs = e.error_dict
         error_list = []
-        for field in errs.keys():
-            if isinstance(errs[field], formencode.validators.Invalid):
-                error_list.append({'value': errs[field].value, 'message': errs[field].msg, 'field': field})
-            else:
-                error_list.append({'value': None, 'message': errs[field], 'field': field})
+        
+        if errs:
+            for field in errs.keys():
+                if isinstance(errs[field], formencode.validators.Invalid):
+                    error_list.append({'value': errs[field].value, 'message': errs[field].msg, 'field': field})
+                else:
+                    error_list.append({'value': None, 'message': errs[field], 'field': field})
+        else:
+            print dir(e)
+            error_list.append({'value': None, 'message': e.message, 'field': None})
             
         result['errors'] = error_list
     
