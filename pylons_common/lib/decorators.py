@@ -24,6 +24,9 @@ def zipargs(decorated_fn):
             dargs = dict(zip(varnames, args))
             dargs.update(kwargs)
             
+            #if 'self' in dargs:
+            #    del dargs['self']
+            
             return fn(**dargs)
         
         return new

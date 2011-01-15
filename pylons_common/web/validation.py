@@ -3,7 +3,7 @@ logger = create_logger('pylons_common.web.validation')
 
 from pylons_common.lib.utils import objectify
 
-def validate(validation_class, fill_out_args=False, allow_extra_fields=True, **kwargs):
+def validate(validation_class, fill_out_args=True, allow_extra_fields=True, **kwargs):
     
     args = kwargs
     if fill_out_args:

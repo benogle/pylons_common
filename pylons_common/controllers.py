@@ -104,6 +104,10 @@ class ApiMixin(object):
         # This is pretty magic...
         if self.REAL_USER_PARAM in signature:
             args[self.REAL_USER_PARAM] = real_user
+        
+        #redundant, but jam in users:
+        shim.user = user
+        shim.real_user = real_user
 
         if hasattr(shim, 'input'):
             args = shim.input(args)

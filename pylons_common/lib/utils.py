@@ -48,7 +48,7 @@ def objectify(d, forgiving=False):
     else:
         return d
 
-def extract(d, keys):
+def extract(d, *keys):
     """
     Creates a new dict that is a subset of d based on passed in keys.
     """

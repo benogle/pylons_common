@@ -7,7 +7,6 @@ class _fake_context(object):
 class TimerProxy(ConnectionProxy):
     def __init__(self, *args, **kw):
         super(TimerProxy, self).__init__(*args, **kw)
-        print 'TimeProxy init %s' % self 
     
     def cursor_execute(self, execute, cursor, statement, parameters, context, executemany):
         
