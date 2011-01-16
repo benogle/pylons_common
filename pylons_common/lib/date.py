@@ -104,3 +104,6 @@ def relative_date_str(date, now=None, time=False):
         return 'in %s' % pluralize(diff.days, '{0} days', '1 day')
     else:
         return date.strftime("%b %e, %Y")## on 10/03/1980
+
+def now():
+    return datetime.utcnow()
