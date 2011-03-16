@@ -148,6 +148,7 @@ class ApiMixin(object):
             api_function = u'.'.join([fn.__module__, module, fn.__name__])
             
             results = fn(**args)
+            self.Session.flush()
             api_response = self.epilogue(shim, results)
             
             if args.has_key(id_param):

@@ -11,7 +11,8 @@ import traceback
 from paste import fileapp, registry
 
 from pylons_common.lib import exceptions
-from pylons_common.lib.log import logger
+from pylons_common.lib.log import create_logger
+logger = create_logger('pylons_common.middleware.errors')
 
 """
 Whats going here? This is Error middleware.
