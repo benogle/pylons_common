@@ -8,6 +8,9 @@ from webob import Request, Response
 import simplejson as json
 import traceback
 
+import smtplib
+from socket import sslerror #if desired
+
 from paste import fileapp, registry
 
 from pylons_common.lib import exceptions
