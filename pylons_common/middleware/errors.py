@@ -269,13 +269,33 @@ class VariableErrorHandler(object):
         smtp_server = errorware.get('smtp_server', 'localhost')
         smtp_username = errorware.get('smtp_username')
         smtp_password = errorware.get('smtp_password')
+        smtp_port= errorware.get('smtp_port')
         smtp_use_tls = converters.asbool(errorware.get('smtp_use_tls'))
         subject_prefix = errorware.get('error_subject_prefix')
         
         class ComEmailReporter(reporter.EmailReporter):
+            #TODO: using smtp_port from outside. Ghetto.
             def report(self, exc_data):
                 logger.info('Emailed about error %s' % exc_data)
-                super(ComEmailReporter, self).report(exc_data)
+                msg = self.assemble_email(exc_data)
+                if smtp_port:
+                    server = smtplib.SMTP(self.smtp_server, smtp_port)
+                else:
+                    server = smtplib.SMTP(self.smtp_server)
+                if self.smtp_use_tls:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo()
+                if self.smtp_username and self.smtp_password:
+                    server.login(self.smtp_username, self.smtp_password)
+                ## FIXME: this should check the return value from this function:
+                result = server.sendmail(self.from_address,
+                                self.to_addresses, msg.as_string())
+                try:
+                    server.quit()
+                except sslerror:
+                    # sslerror is raised in tls connections on closing sometimes
+                    pass
         
         # emails will not be sent in dev. 
         if error_email:
