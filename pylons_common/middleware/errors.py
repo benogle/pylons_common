@@ -255,7 +255,9 @@ class VariableErrorHandler(object):
                             media_paths=py_media, head_html=head_html, 
                             footer_html=footer,
                             libraries=report_libs, reporters=reporters)
-        self.glossy_error_app = VanillaErrorMiddleware(app, global_conf, reporters=reporters, **errorware)
+        
+        d = dict([(k, v) for k, v in errorware.items() if k != 'smtp_port'])
+        self.glossy_error_app = VanillaErrorMiddleware(app, global_conf, reporters=reporters, **d)
     
     def get_reporters(self, errorware):
         """
@@ -276,13 +278,18 @@ class VariableErrorHandler(object):
         smtp_use_tls = converters.asbool(errorware.get('smtp_use_tls'))
         subject_prefix = errorware.get('error_subject_prefix')
         
+        logger.info('ErrorWare %s' % errorware)
+        
         class ComEmailReporter(reporter.EmailReporter):
             #TODO: using smtp_port from outside. Ghetto.
             def report(self, exc_data):
+                logger.info('Sending email on %s:%s for %s, tls? %s' % (
+                    self.smtp_server, smtp_port, self.smtp_username, self.smtp_use_tls)
+                )
                 logger.info('Emailed about error %s' % exc_data)
                 msg = self.assemble_email(exc_data)
                 if smtp_port:
-                    server = smtplib.SMTP(self.smtp_server, smtp_port)
+                    server = smtplib.SMTP(self.smtp_server, int(smtp_port))
                 else:
                     server = smtplib.SMTP(self.smtp_server)
                 if self.smtp_use_tls:
@@ -294,6 +301,7 @@ class VariableErrorHandler(object):
                 ## FIXME: this should check the return value from this function:
                 result = server.sendmail(self.from_address,
                                 self.to_addresses, msg.as_string())
+                logger.info('Result from sendmail %s' % result)
                 try:
                     server.quit()
                 except sslerror:
