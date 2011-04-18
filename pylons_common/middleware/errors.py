@@ -67,6 +67,10 @@ def handle_async_exception(exc_info, environ, debug_info=None):
         }]
     }
     
+    logger.info('Error %s; %s' % (type, exception))
+    
+    print ''.join(traceback.format_tb(trace))
+    
     if debug_info:
         # get bottom of the trace for the location that raised the error.
         last_trace = trace
@@ -107,6 +111,14 @@ class VanillaErrorMiddleware(ErrorMiddleware):
         except:
             exc_info = sys.exc_info()
             try:
+                
+                count = get_debug_count(environ)
+                base_path = Request(environ).application_url + '/_debug/'
+                exc_data = collector.collect_exception(*exc_info)
+                exc_data.view_url = base_path + str(count)
+                if self.reporters:
+                    for reporter in self.reporters:
+                        reporter.report(exc_data)
                 
                 #is_async is set by the @ajax decorator
                 if environ.get('is_async', None):
