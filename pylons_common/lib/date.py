@@ -5,7 +5,7 @@ from pylons_common.lib.utils import pluralize
 logger = create_logger('pylons_common.lib.datetime')
 from datetime import datetime, timedelta
 
-DATE_FORMAT_ACCEPT = [u'%Y-%m-%d %H:%M:%S', u'%Y-%m-%d', u'%m-%d-%Y', u'%m/%d/%Y', u'%m.%d.%Y', u'%b %d, %Y']
+DATE_FORMAT_ACCEPT = [u'%Y-%m-%d %H:%M:%S', u'%Y-%m-%d %H:%M:%SZ', u'%Y-%m-%d', u'%m-%d-%Y', u'%m/%d/%Y', u'%m.%d.%Y', u'%b %d, %Y']
 
 popular_timezones = [u'US/Eastern', u'US/Central', u'US/Mountain', u'US/Pacific', u'US/Alaska', u'US/Hawaii', u'US/Samoa',
                      u'Europe/London', u'Europe/Paris', u'Europe/Istanbul', u'Europe/Moscow',
